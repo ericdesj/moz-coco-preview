@@ -1,7 +1,7 @@
 # CoCo Preview
 
 This repository is used to display experimental or shipped features for the CoCo 
-[fork](github.com/co60ca/co60ca.github.io).
+[fork](https://github.com/ericdesj/moz-codecover-ui).
 
 
 ### Feedback or Questions

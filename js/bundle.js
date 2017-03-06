@@ -48251,7 +48251,7 @@ module.exports = { makeRequest: makeRequest };
 
 }).call(this,require("buffer").Buffer)
 },{"../Errors":484,"buffer":18,"https":152}],489:[function(require,module,exports){
-"use strict";
+'use strict';
 
 /*
 * This Source Code Form is subject to the terms of the Mozilla Public
@@ -48296,56 +48296,7 @@ var __allQueries = [];
 
 var StringManipulation = require('../StringManipulation');
 
-var randomVar_WjeTt72OOA = [{
-  name: "Recent Builds by Date",
-  obj: {
-    remote_request: {
-      "from": "coverage-summary",
-      "limit": 1000,
-      "groupby": ["build.date", "build.revision12"]
-    },
-    processPre: function processPre(comp, d) {
-      d.data.sort(function (b, a) {
-        if (a[0] == null) return -1;
-        if (b[0] == null) return 1;
-        return parseInt(a[0]) < parseInt(b[0]) ? -1 : 1;
-      });
-      comp.setState({
-        data: {
-          headers: d.header,
-          rows: d.data
-        }
-      });
-    },
-    processHeaders: function processHeaders(d) {
-      return d.map(StringManipulation.header);
-    },
-    processBody: function processBody(d) {
-      return d.map(function (r) {
-        if (r[0]) {
-          var tdate = r[0] * 1000;
-          tdate -= tdate % 1;
-          r[0] = new Date(tdate).toISOString().replace(/T/, " ");
-        }
-        return r;
-      });
-    }
-  }
-}];
-
-__allQueries = __allQueries.concat(randomVar_WjeTt72OOA);
-
-/*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Author: Bradley Kennedy (bk@co60.ca)
-*/
-
-var StringManipulation = require('../StringManipulation');
-
-var randomVar_nIf8IlqWGn = [{
+var randomVar_XmfhGngBJj = [{
   name: 'All Test Files',
   obj: {
     filter_revision: true,
@@ -48372,56 +48323,7 @@ var randomVar_nIf8IlqWGn = [{
   }
 }];
 
-__allQueries = __allQueries.concat(randomVar_nIf8IlqWGn);
-
-/*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Author: Bradley Kennedy (bk@co60.ca)
-*/
-
-var StringManipulation = require('../StringManipulation');
-
-var randomVar_bcRyPnaS5t = [{
-  // https://github.com/chinhodado/codecoverage_presenter/blob/gh-pages/js/query/query1.js
-  name: "Coverage Summary Max Score per Revision",
-  obj: {
-    path: "Legacy",
-    filter_revision: true,
-    remote_request: {
-      "from": "coverage-summary",
-      "where": { "and": [{ "eq": { "build.revision12": "18a8dc43d170" } }] },
-      "limit": 10000,
-      "select": {
-        "name": "Max Score",
-        "value": "source.file.score",
-        "aggregate": "maximum"
-      },
-      "groupby": ["source.file.name"]
-    },
-    processPre: function processPre(comp, d) {
-      comp.setState({
-        data: {
-          headers: d.header,
-          rows: d.data
-        }
-      });
-    },
-    processHeaders: function processHeaders(d) {
-      return d.map(StringManipulation.header);
-    },
-    processBody: function processBody(d) {
-      return d.map(function (r) {
-        r[1] = r[1].toPrecision(6);
-        return r;
-      });
-    }
-  }
-}];
-
-__allQueries = __allQueries.concat(randomVar_bcRyPnaS5t);
+__allQueries = __allQueries.concat(randomVar_XmfhGngBJj);
 
 /*
 * This Source Code Form is subject to the terms of the Mozilla Public
@@ -48520,7 +48422,7 @@ var directoryDrillDown = {
             var cov = row[3];
             var ucov = row[2];
             var lines = cov + ucov;
-            return [dir, cov / lines, { text: (cov / lines * 100).toPrecision(3) + " %", val: cov / lines }, { text: cov + "/" + lines, val: cov / lines }];
+            return [dir, cov / lines, { text: (cov / lines * 100).toPrecision(3) + ' %', val: cov / lines }, { text: cov + '/' + lines, val: cov / lines }];
           });
 
           res({ header: headers, data: rows });
@@ -48539,164 +48441,6 @@ var directoryDrillDown = {
       return d.map(StringManipulation.header);
     },
     processBody: null
-  }
-};
-
-__allQueries = __allQueries.concat([directoryDrillDown]);
-
-/*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Author: Bradley Kennedy (bk@co60.ca)
-*/
-
-var StringManipulation = require('../StringManipulation');
-var Client = require('../client/Client');
-var ClientFilter = require('./ClientFilter');
-var deepcopy = require("lodash.clonedeep");
-
-/* Queries have the following objects:
- * name, which is the display string,
- *
- * obj which contains the query instructions
- *
- * within obj there is remote_request which is the query in JSON
- *
- * filter_revision is a boolean flag for if the query may be filtered
- * by build.revision12, if it is true we will try and find a where clause
- * in that mentions the aformentioned property, if filter_revision isn't set
- * or is false we will not remove the filter but instead not modify the query
- *
- * There is also three functions:
- * processPre(component, data) which allows you to mutate
- *   the state of the component on injestion of data, this may be left null
- *   but may be relatively useless without doing so
- * processHeaders(data) takes in a header array and returns a header array
- *   with modifications to the elements, may be null
- * processBody(data) takes in a array of arrays and returns an array of arrays,
- *   may be null.
- */
-
-var directoryDrillDown = {
-  name: 'Directory Drilldown Folders (Depreciated)',
-  obj: {
-    path: "Legacy",
-    filter_revision: true,
-    drills_down: true,
-    drilldown_context: 'chrome://',
-    format_headers: true,
-    query_override: true,
-    remote_request: {
-      "limit": 100,
-      "from": "coverage-summary",
-      "where": { "and": [{ "eq": { "build.revision12": "18a8dc43d170" } }, { "missing": "test.url" }, { "regexp": { "source.file.name": "chrome://.*" } }] },
-      "select": [{
-        "aggregate": "sum",
-        "name": "covered",
-        "value": "source.file.total_covered"
-      }, {
-        "aggregate": "sum",
-        "name": "uncovered",
-        "value": "source.file.total_uncovered"
-      }]
-    },
-    drillUp: function drillUp(drillDownContext) {
-      if (!drillDownContext) {
-        return this.drilldown_context;
-      }
-      return drillDownContext.substr(0, drillDownContext.substr(0, drillDownContext.length - 3).lastIndexOf("/") + 1);
-    },
-    drillDown: function drillDown(selectedRow, drillDownContext) {
-      if (!drillDownContext) {
-        drillDownContext = this.drilldown_context;
-      }
-      var dotstarindex = drillDownContext.indexOf(".*");
-      if (dotstarindex != -1) {
-        drillDownContext = drillDownContext.substring(0, dotstarindex);
-      }
-      drillDownContext = drillDownContext + selectedRow[0].val + '/.*';
-
-      var remote_request_copy = JSON.parse(JSON.stringify(this.remote_request));
-
-      ClientFilter.setProp(remote_request_copy, 'source.file.name', drillDownContext);
-      return {
-        context: drillDownContext, remote_request: remote_request_copy
-      };
-    },
-    override: function override(query, context) {
-      var dirs = [];
-      var dirobj = this.getFolderWithContext(context);
-      context = context || "chrome://.*";
-
-      var tasks = [];
-      for (var prop in dirobj) {
-        var job = this.aggregateDir(query, prop, context.substring(0, context.lastIndexOf("/.*") + 1) + prop + "/.*");
-        tasks.push(job);
-      }
-
-      return new Promise(function (res, rej) {
-        Promise.all(tasks).then(function (val) {
-          var colours = ["#74c274", "#f2b968", "#de6c69"];
-          var levels = [0.9, 0.70, 0.0];
-          var headers = ["Directory", { title: "Bar", type: "bar", colours: colours, levels: levels }, { title: "Covered %", type: "bg", colours: colours, levels: levels }, { title: "Covered Lines", type: "bg", colours: colours, levels: levels }];
-          res({
-            header: headers,
-            data: val
-          });
-        });
-      });
-    },
-    aggregateDir: function aggregateDir(query, prop, context) {
-      var queryJSON = deepcopy(query);
-      ClientFilter.setProp(queryJSON, 'source.file.name', context);
-
-      return new Promise(function (res, rej) {
-        Client.makeRequest('activedata.allizom.org', queryJSON, function (data) {
-          var cov = data.data.covered;
-          var ucov = data.data.uncovered;
-          var lines = cov + ucov;
-          res([prop, cov / lines, { text: (cov / lines * 100).toPrecision(3) + " %", val: cov / lines }, { text: cov + "/" + lines, val: cov / lines }]);
-        });
-      });
-    },
-    processPre: function processPre(comp, d) {
-      comp.setState({
-        data: {
-          headers: d.header,
-          rows: d.data
-        }
-      });
-    },
-    processHeaders: function processHeaders(d) {
-      return d.map(StringManipulation.header);
-    },
-    processBody: null,
-    getFolderWithContext: function getFolderWithContext(c) {
-      var path = c.substring(c.indexOf("//") + 1, c.lastIndexOf("/.*"));
-      var folders = this.getFolders();
-      var directorySplit = path.split("/");
-      var res = folders["chrome://"];
-      for (var i = 1; i < directorySplit.length; i++) {
-        res = res[directorySplit[i]];
-      }
-      return res;
-    },
-    getFolders: function getFolders() {
-      return {
-        "chrome://": {
-          "browser": { "content": { "downloads": null, "places": null } },
-          "extensions": { "content": null },
-          "global": { "content": { "bindings": null } },
-          "marionette": { "content": null },
-          "mochikit": { "content": null },
-          "pocket": null,
-          "satchel": null,
-          "specialpowers": null
-        }
-      };
-    }
   }
 };
 
@@ -48781,6 +48525,23 @@ var Example = _react2.default.createClass({
           _reactBootstrap.Modal.Body,
           null,
           _react2.default.createElement(
+            'h3',
+            null,
+            'Coco'
+          ),
+          _react2.default.createElement(
+            'b',
+            null,
+            'Co'
+          ),
+          'de ',
+          _react2.default.createElement(
+            'b',
+            null,
+            'co'
+          ),
+          'verage data exploration tool',
+          _react2.default.createElement(
             'h4',
             null,
             _react2.default.createElement(
@@ -48788,6 +48549,37 @@ var Example = _react2.default.createClass({
               { href: 'https://github.com/co60ca/moz-codecover-ui' },
               'Github Link / Project Description'
             )
+          ),
+          _react2.default.createElement('hr', null),
+          _react2.default.createElement(
+            'h3',
+            null,
+            'Legend'
+          ),
+          _react2.default.createElement('hr', null),
+          _react2.default.createElement(
+            'h4',
+            null,
+            'Drilldown enabled'
+          ),
+          _react2.default.createElement(
+            'p',
+            null,
+            _react2.default.createElement('img', { src: 'icons/drill.png', height: '32px' }),
+            _react2.default.createElement('br', null),
+            'The specified query has drilldown features enabled on it. When using this query clicking a row will drill down a level.'
+          ),
+          _react2.default.createElement(
+            'h4',
+            null,
+            'Revision Setting enabled'
+          ),
+          _react2.default.createElement(
+            'p',
+            null,
+            _react2.default.createElement('img', { src: 'icons/rev.png', height: '32px' }),
+            _react2.default.createElement('br', null),
+            'The specified query allows changing of the revision number to filter on.'
           )
         ),
         _react2.default.createElement(
@@ -48853,7 +48645,7 @@ var Loading = _react2.default.createClass({
 
     setTimeout(function () {
       _this2.setState({ hidden: false });
-      _this2.toggle(true);
+      _this2.toggle(false);
     }, 5);
     if (this.props.then) {
       setTimeout(function () {
@@ -48931,14 +48723,7 @@ var RevisionSetter = _react2.default.createClass({
   _onChange: function _onChange() {
     this.setState({ revision: _PageStore2.default.getRevision() });
   },
-  handleR: function handleR(e) {
-    this.setState({ revision: e.target.value });
-    _PageActions2.default.setRevision(e.target.value);
-  },
-  doSet: function doSet() {
-    _PageActions2.default.setRevision(this.state.revision);
-  },
-  doSetByRevisionList: function doSetByRevisionList(e) {
+  doSetRevision: function doSetRevision(e) {
     this.setState({ revision: e.target.value });
     _PageActions2.default.setRevision(e.target.value);
   },
@@ -48967,32 +48752,11 @@ var RevisionSetter = _react2.default.createClass({
       _react2.default.createElement(
         _reactBootstrap.ControlLabel,
         null,
-        'Revision ID'
-      ),
-      _react2.default.createElement(
-        _reactBootstrap.InputGroup,
-        null,
-        _react2.default.createElement(_reactBootstrap.FormControl, { onChange: this.handleR, type: 'text', placeholder: 'Revision',
-          value: this.state.revision || "" }),
-        _react2.default.createElement(
-          _reactBootstrap.InputGroup.Button,
-          null,
-          _react2.default.createElement(
-            _reactBootstrap.Button,
-            { onClick: this.doSet },
-            'Set'
-          )
-        )
-      ),
-      _react2.default.createElement('br', null),
-      _react2.default.createElement(
-        _reactBootstrap.ControlLabel,
-        null,
         'Select Revision (Last 2 months)'
       ),
       _react2.default.createElement(
         _reactBootstrap.FormControl,
-        { onChange: this.doSetByRevisionList, value: this.state.value, componentClass: 'select' },
+        { onChange: this.doSetRevision, value: this.state.value, componentClass: 'select' },
         _react2.default.createElement(
           'option',
           { selected: 'selected', disabled: true },
@@ -49051,6 +48815,14 @@ var NavOptions = _react2.default.createClass({
       var dirs = {};
       // Object works well with for each
       for (var key in allItems) {
+        var common = _react2.default.createElement(
+          'div',
+          null,
+          allItems[key].query.filter_revision && _react2.default.createElement('img', { height: '16px', alt: 'Revision modifiable', src: 'icons/rev.png' }),
+          allItems[key].query.drills_down && _react2.default.createElement('img', { height: '16px', alt: 'Drilldown enabled', src: 'icons/drill.png' }),
+          " ",
+          allItems[key].title
+        );
         if (allItems[key].query.hasOwnProperty('path')) {
           // Has path
           if (!dirs.hasOwnProperty(allItems[key].query.path)) {
@@ -49059,9 +48831,7 @@ var NavOptions = _react2.default.createClass({
           dirs[allItems[key].query.path].push(_react2.default.createElement(
             _reactBootstrap.MenuItem,
             { onSelect: this.handleSelect(key), key: key },
-            allItems[key].query.filter_revision && "R* ",
-            allItems[key].query.drills_down && "D* ",
-            allItems[key].title
+            common
           ));
         } else {
           // Root
@@ -49070,9 +48840,7 @@ var NavOptions = _react2.default.createClass({
             {
               onSelect: this.handleSelect(key),
               key: key },
-            allItems[key].query.filter_revision && "R* ",
-            allItems[key].query.drills_down && "D* ",
-            allItems[key].title
+            common
           ));
         }
       }

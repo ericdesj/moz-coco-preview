@@ -48296,7 +48296,7 @@ var __allQueries = [];
 
 var StringManipulation = require('../StringManipulation');
 
-var randomVar_XmfhGngBJj = [{
+var randomVar_koNL1HK8xw = [{
   name: 'All Test Files',
   obj: {
     filter_revision: true,
@@ -48323,7 +48323,7 @@ var randomVar_XmfhGngBJj = [{
   }
 }];
 
-__allQueries = __allQueries.concat(randomVar_XmfhGngBJj);
+__allQueries = __allQueries.concat(randomVar_koNL1HK8xw);
 
 /*
 * This Source Code Form is subject to the terms of the Mozilla Public
@@ -48548,6 +48548,29 @@ var Example = _react2.default.createClass({
               'a',
               { href: 'https://github.com/co60ca/moz-codecover-ui' },
               'Github Link / Project Description'
+            )
+          ),
+          _react2.default.createElement(
+            'h3',
+            null,
+            'Winter 2017 Fork'
+          ),
+          _react2.default.createElement(
+            'h4',
+            null,
+            _react2.default.createElement(
+              'a',
+              { href: 'https://github.com/ericdesj/moz-codecover-ui' },
+              'Github Link / Project Description'
+            )
+          ),
+          _react2.default.createElement(
+            'h4',
+            null,
+            _react2.default.createElement(
+              'a',
+              { href: 'https://github.com/ericdesj/moz-codecover-ui/issues' },
+              'Create GitHub Issue'
             )
           ),
           _react2.default.createElement('hr', null),
@@ -48954,7 +48977,21 @@ var Sidebar = _react2.default.createClass({
     var banner = _react2.default.createElement(
       'div',
       { className: "bottom" },
-      'Coco made with \u2665 by the Code Coverage team'
+      _react2.default.createElement(
+        'p',
+        null,
+        'Report a bug or request a feature',
+        _react2.default.createElement(
+          'a',
+          { href: 'https://github.com/ericdesj/moz-codecover-ui/issues/new' },
+          ' here'
+        )
+      ),
+      _react2.default.createElement(
+        'p',
+        null,
+        'Coco made with \u2665 by the Code Coverage team'
+      )
     );
 
     var contextview = _react2.default.createElement(PropertyViewer, { header: 'Context' });

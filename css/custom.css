@@ -31,6 +31,11 @@ body,
   margin-bottom: 5px;
   color: #516ab1;
 }
+.sidebar > div.bottom a,
+.sidebar > div.bottom a:visited {
+  color: #c4c4c4;
+  text-decoration: none;
+}
 .page-wrapper {
   padding-left: 300px;
   transition: all 1s ease;

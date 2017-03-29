@@ -48296,7 +48296,7 @@ var __allQueries = [];
 
 var StringManipulation = require('../StringManipulation');
 
-var randomVar_koNL1HK8xw = [{
+var randomVar_dlUWKKRhKN = [{
   name: 'All Test Files',
   obj: {
     filter_revision: true,
@@ -48323,7 +48323,7 @@ var randomVar_koNL1HK8xw = [{
   }
 }];
 
-__allQueries = __allQueries.concat(randomVar_koNL1HK8xw);
+__allQueries = __allQueries.concat(randomVar_dlUWKKRhKN);
 
 /*
 * This Source Code Form is subject to the terms of the Mozilla Public
@@ -48756,15 +48756,33 @@ var RevisionSetter = _react2.default.createClass({
       var buildDate = new Date(this.state.revision_list[i].build.date * 1000).toISOString();
       var buildRevision = this.state.revision_list[i].build.revision12;
       var buildCount = this.state.revision_list[i].count;
-      revision_list.push(_react2.default.createElement(
-        'option',
-        { value: buildRevision },
-        buildDate,
-        ' | ',
-        buildRevision,
-        ' | ',
-        buildCount
-      ));
+      var buildLanguage = "";
+      try {
+        buildLanguage = this.state.revision_list[i].source.language;
+      } catch (e) {}
+      if (buildLanguage) {
+        revision_list.push(_react2.default.createElement(
+          'option',
+          { value: buildRevision },
+          buildDate,
+          ' | ',
+          buildRevision,
+          ' | ',
+          buildCount,
+          ' | ',
+          buildLanguage
+        ));
+      } else {
+        revision_list.push(_react2.default.createElement(
+          'option',
+          { value: buildRevision },
+          buildDate,
+          ' | ',
+          buildRevision,
+          ' | ',
+          buildCount
+        ));
+      }
     }
     return revision_list;
   },
@@ -49351,12 +49369,12 @@ var TopLevel = _react2.default.createClass({
     var _this3 = this;
 
     _PageStore2.default.addChangeListener(this._onChange);
-    // Get latest query
+    // Get latest revision query (last two months)
     _Client2.default.makeRequest('activedata.allizom.org', {
       "sort": { "build.date": "desc" },
       "from": "coverage-summary",
       "limit": 1000,
-      "groupby": ["build.date", "build.revision12"],
+      "groupby": ["build.date", "build.revision12", "source.language"],
       "where": { "gte": { "build.date": { "date": "today-2month" } } },
       "format": "list"
     }, function (data) {
